@@ -20,6 +20,8 @@ export const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
     );
   }
 
+  // Se houver erro ao verificar autenticação, redirecionar para login
+  // O interceptor de 401 no apiClient já trata redirecionamentos automáticos
   if (isError || !isAuthenticated) {
     return <Navigate to="/login" replace />;
   }

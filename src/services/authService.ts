@@ -13,7 +13,13 @@ export const authService = {
   },
 
   async getMe(): Promise<User> {
-    const response = await apiClient.get<SingleResponse<User>>('/api/auth/me');
+    // Adicionar headers para evitar cache de resposta autenticada
+    const response = await apiClient.get<SingleResponse<User>>('/api/auth/me', {
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+      },
+    });
     return response.data.data;
   },
 };

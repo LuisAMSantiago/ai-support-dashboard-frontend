@@ -18,7 +18,10 @@ export const useAuth = () => {
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (user) => {
+      // Atualizar dados do usuário no cache
       queryClient.setQueryData(['auth', 'me'], user);
+      // Invalidar queries de tickets para carregar com novo contexto
+      queryClient.invalidateQueries({ queryKey: ['tickets'] });
       toast.success('Login realizado com sucesso!');
       navigate('/tickets');
     },
@@ -31,14 +34,16 @@ export const useAuth = () => {
   const logoutMutation = useMutation({
     mutationFn: authService.logout,
     onSuccess: () => {
+      // Limpar todo o cache, incluindo dados do usuário
       queryClient.clear();
       toast.success('Logout realizado com sucesso!');
-      navigate('/login');
+      navigate('/login', { replace: true });
     },
     onError: () => {
       // Even on error, clear the cache and redirect
       queryClient.clear();
-      navigate('/login');
+      toast.error('Erro ao fazer logout, mas a sessão foi encerrada');
+      navigate('/login', { replace: true });
     },
   });
 
@@ -47,6 +52,7 @@ export const useAuth = () => {
     isLoading: meQuery.isLoading,
     isAuthenticated: !!meQuery.data,
     isError: meQuery.isError,
+    authError: meQuery.error?.message,
     login: loginMutation.mutate,
     isLoggingIn: loginMutation.isPending,
     loginError: loginMutation.error,

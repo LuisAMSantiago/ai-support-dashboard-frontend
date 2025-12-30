@@ -31,8 +31,16 @@ apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
-      // Only redirect if not already on login page
-      if (!window.location.pathname.includes('/login')) {
+      // Clear auth state and redirect to login
+      // This handles session expiration or invalid token
+      const isLoginPage = window.location.pathname === '/login';
+      
+      if (!isLoginPage) {
+        // Clear any stored auth state
+        localStorage.removeItem('auth_token');
+        sessionStorage.clear();
+        
+        // Redirect to login
         window.location.href = '/login';
       }
     }
