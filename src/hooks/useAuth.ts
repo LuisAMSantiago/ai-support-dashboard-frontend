@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { authService } from '@/services/authService';
 import type { LoginCredentials, User } from '@/types';
 import { toast } from 'sonner';
+import { useEffect } from 'react';
 
 export const useAuth = () => {
   const queryClient = useQueryClient();
@@ -15,6 +16,21 @@ export const useAuth = () => {
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
 
+  // Handle 401 errors - redirect to login if not already there
+  useEffect(() => {
+    if (meQuery.isError) {
+      const error = meQuery.error as any;
+      if (error?.response?.status === 401) {
+        const isLoginPage = window.location.pathname === '/login';
+        if (!isLoginPage) {
+          // Clear cache and redirect
+          queryClient.clear();
+          navigate('/login', { replace: true });
+        }
+      }
+    }
+  }, [meQuery.isError, meQuery.error, navigate, queryClient]);
+
   const loginMutation = useMutation({
     mutationFn: (credentials: LoginCredentials) => authService.login(credentials),
     onSuccess: (user) => {
@@ -23,7 +39,7 @@ export const useAuth = () => {
       // Invalidar queries de tickets para carregar com novo contexto
       queryClient.invalidateQueries({ queryKey: ['tickets'] });
       toast.success('Login realizado com sucesso!');
-      navigate('/tickets');
+      navigate('/tickets', { replace: true });
     },
     onError: (error: any) => {
       const message = error.response?.data?.message || 'Erro ao realizar login';

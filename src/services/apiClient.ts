@@ -11,16 +11,28 @@ export const apiClient = axios.create({
   },
 });
 
+// Helper function to extract CSRF token from cookie
+const getXsrfTokenFromCookie = (): string | null => {
+  const name = 'XSRF-TOKEN=';
+  const decodedCookie = decodeURIComponent(document.cookie);
+  const cookieArray = decodedCookie.split(';');
+  
+  for (let cookie of cookieArray) {
+    cookie = cookie.trim();
+    if (cookie.indexOf(name) === 0) {
+      return cookie.substring(name.length);
+    }
+  }
+  return null;
+};
+
 // Request interceptor to handle XSRF token
 apiClient.interceptors.request.use((config) => {
-  // Get XSRF token from cookie if available
-  const xsrfToken = document.cookie
-    .split('; ')
-    .find(row => row.startsWith('XSRF-TOKEN='))
-    ?.split('=')[1];
+  // Get XSRF token from cookie
+  const xsrfToken = getXsrfTokenFromCookie();
   
   if (xsrfToken) {
-    config.headers['X-XSRF-TOKEN'] = decodeURIComponent(xsrfToken);
+    config.headers['X-XSRF-TOKEN'] = xsrfToken;
   }
   
   return config;
@@ -30,26 +42,14 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (response) => response,
   (error: AxiosError) => {
-    if (error.response?.status === 401) {
-      // Clear auth state and redirect to login
-      // This handles session expiration or invalid token
-      const isLoginPage = window.location.pathname === '/login';
-      
-      if (!isLoginPage) {
-        // Clear any stored auth state
-        localStorage.removeItem('auth_token');
-        sessionStorage.clear();
-        
-        // Redirect to login
-        window.location.href = '/login';
-      }
-    }
+    // Don't handle 401 here - let the components handle authentication state
+    // This prevents infinite redirects when checking auth status
     return Promise.reject(error);
   }
 );
 
 export const getCsrfCookie = async () => {
-  await apiClient.get('/sanctum/csrf-cookie');
+  return apiClient.get('/sanctum/csrf-cookie');
 };
 
 export default apiClient;

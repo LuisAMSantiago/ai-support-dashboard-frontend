@@ -3,8 +3,32 @@ import type { User, LoginCredentials, SingleResponse } from '@/types';
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<User> {
-    await getCsrfCookie();
+    // Get CSRF token first - essential for Sanctum SPA authentication
+    try {
+      await getCsrfCookie();
+    } catch (error) {
+      console.warn('Failed to fetch CSRF token:', error);
+      // Continue anyway, token might be in cookies
+    }
+    
+    // Brief delay to ensure cookie is set
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
     const response = await apiClient.post<SingleResponse<User>>('/api/auth/login', credentials);
+    return response.data.data;
+  },
+
+  async register(credentials: LoginCredentials): Promise<User> {
+    // Get CSRF token first
+    try {
+      await getCsrfCookie();
+    } catch (error) {
+      console.warn('Failed to fetch CSRF token:', error);
+    }
+    
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const response = await apiClient.post<SingleResponse<User>>('/api/auth/register', credentials);
     return response.data.data;
   },
 
