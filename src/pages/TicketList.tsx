@@ -89,10 +89,18 @@ const TicketList = () => {
               Gerencie tickets de suporte com inteligência artificial
             </p>
           </div>
-          <Button onClick={() => setCreateModalOpen(true)}>
-            <Plus className="w-4 h-4" />
-            Novo Ticket
-          </Button>
+          <div className="flex gap-2">
+            <Link to="/tickets/trashed">
+              <Button variant="outline">
+                <Trash2 className="w-4 h-4" />
+                Lixeira
+              </Button>
+            </Link>
+            <Button onClick={() => setCreateModalOpen(true)}>
+              <Plus className="w-4 h-4" />
+              Novo Ticket
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
