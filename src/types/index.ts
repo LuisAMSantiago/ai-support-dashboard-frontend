@@ -2,6 +2,12 @@ export type TicketStatus = 'open' | 'in_progress' | 'waiting' | 'resolved' | 'cl
 export type TicketPriority = 'low' | 'medium' | 'high';
 export type AiJobStatus = 'idle' | 'queued' | 'processing' | 'done' | 'failed';
 
+export interface UserRelation {
+  id: number;
+  name: string;
+  email: string;
+}
+
 export interface Ticket {
   id: number;
   title: string;
@@ -12,11 +18,16 @@ export interface Ticket {
   status: TicketStatus;
   assigned_to: number | null;
   closed_at: string | null;
-  // Tracking fields
+  // Tracking fields (IDs)
   created_by: number | null;
   updated_by: number | null;
   closed_by: number | null;
   reopened_by: number | null;
+  // Tracking relations (user objects)
+  creator?: UserRelation | null;
+  updater?: UserRelation | null;
+  closer?: UserRelation | null;
+  reopener?: UserRelation | null;
   // AI status fields
   ai_summary_status: AiJobStatus;
   ai_reply_status: AiJobStatus;
