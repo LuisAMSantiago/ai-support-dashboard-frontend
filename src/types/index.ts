@@ -23,11 +23,11 @@ export interface Ticket {
   updated_by: number | null;
   closed_by: number | null;
   reopened_by: number | null;
-  // Tracking relations (user objects)
-  creator?: UserRelation | null;
-  updater?: UserRelation | null;
-  closer?: UserRelation | null;
-  reopener?: UserRelation | null;
+  // Tracking relations (user objects from API)
+  created_by_user?: UserRelation | null;
+  updated_by_user?: UserRelation | null;
+  closed_by_user?: UserRelation | null;
+  reopened_by_user?: UserRelation | null;
   // AI status fields
   ai_summary_status: AiJobStatus;
   ai_reply_status: AiJobStatus;

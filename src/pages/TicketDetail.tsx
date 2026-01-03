@@ -174,7 +174,7 @@ const TicketDetail = () => {
         </div>
 
         {/* Tracking Info */}
-        {(ticket.created_by || ticket.updated_by || ticket.closed_by || ticket.reopened_by) && (
+        {(ticket.created_by_user || ticket.updated_by_user || ticket.closed_by_user || ticket.reopened_by_user) && (
           <Card className="bg-card border-border">
             <CardHeader className="pb-3">
               <CardTitle className="text-base flex items-center gap-2">
@@ -184,28 +184,28 @@ const TicketDetail = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-2 sm:grid-cols-2 text-sm">
-                {ticket.creator && (
+                {ticket.created_by_user && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <User className="w-3.5 h-3.5" />
-                    <span>Criado por: <span className="text-foreground">{ticket.creator.email}</span></span>
+                    <span>Criado por: <span className="text-foreground">{ticket.created_by_user.email}</span></span>
                   </div>
                 )}
-                {ticket.updater && (
+                {ticket.updated_by_user && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <UserCheck className="w-3.5 h-3.5" />
-                    <span>Atualizado por: <span className="text-foreground">{ticket.updater.email}</span></span>
+                    <span>Atualizado por: <span className="text-foreground">{ticket.updated_by_user.email}</span></span>
                   </div>
                 )}
-                {ticket.closer && (
+                {ticket.closed_by_user && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <XCircle className="w-3.5 h-3.5" />
-                    <span>Fechado por: <span className="text-foreground">{ticket.closer.email}</span></span>
+                    <span>Fechado por: <span className="text-foreground">{ticket.closed_by_user.email}</span></span>
                   </div>
                 )}
-                {ticket.reopener && (
+                {ticket.reopened_by_user && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Reaberto por: <span className="text-foreground">{ticket.reopener.email}</span></span>
+                    <span>Reaberto por: <span className="text-foreground">{ticket.reopened_by_user.email}</span></span>
                   </div>
                 )}
               </div>
