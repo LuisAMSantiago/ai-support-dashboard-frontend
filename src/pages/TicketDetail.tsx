@@ -179,13 +179,10 @@ const TicketDetail = () => {
             {/* AI Summary */}
             <Card className={cn('bg-card border-border', ticket.ai_summary_status === 'done' && 'ai-glow')}>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-accent" />
-                    Resumo IA
-                  </CardTitle>
-                  <AiStatusIndicator status={ticket.ai_summary_status} size="sm" />
-                </div>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-accent" />
+                  Resumo IA
+                </CardTitle>
                 <CardDescription>Resumo automático do ticket</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -237,13 +234,10 @@ const TicketDetail = () => {
             {/* AI Reply */}
             <Card className={cn('bg-card border-border', ticket.ai_reply_status === 'done' && 'ai-glow')}>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4 text-accent" />
-                    Resposta IA
-                  </CardTitle>
-                  <AiStatusIndicator status={ticket.ai_reply_status} size="sm" />
-                </div>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-accent" />
+                  Resposta IA
+                </CardTitle>
                 <CardDescription>Sugestão de resposta</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
@@ -297,13 +291,10 @@ const TicketDetail = () => {
             {/* AI Priority */}
             <Card className={cn('bg-card border-border', ticket.ai_priority_status === 'done' && 'ai-glow')}>
               <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-accent" />
-                    Prioridade IA
-                  </CardTitle>
-                  <AiStatusIndicator status={ticket.ai_priority_status} size="sm" />
-                </div>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-accent" />
+                  Prioridade IA
+                </CardTitle>
                 <CardDescription>Classificação automática</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
