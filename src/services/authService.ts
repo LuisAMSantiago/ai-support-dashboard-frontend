@@ -1,5 +1,5 @@
 import apiClient, { getCsrfCookie } from './apiClient';
-import type { User, LoginCredentials, SingleResponse } from '@/types';
+import type { User, LoginCredentials, RegisterCredentials, SingleResponse } from '@/types';
 
 export const authService = {
   async login(credentials: LoginCredentials): Promise<User> {
@@ -18,7 +18,7 @@ export const authService = {
     return response.data.data;
   },
 
-  async register(credentials: LoginCredentials): Promise<User> {
+  async register(credentials: RegisterCredentials): Promise<User> {
     // Get CSRF token first
     try {
       await getCsrfCookie();
