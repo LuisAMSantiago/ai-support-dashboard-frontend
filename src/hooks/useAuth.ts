@@ -81,9 +81,11 @@ export const useRequireAuth = () => {
   const { isAuthenticated, isLoading, isError } = useAuth();
   const navigate = useNavigate();
 
-  if (!isLoading && (isError || !isAuthenticated)) {
-    navigate('/login', { replace: true });
-  }
+  useEffect(() => {
+    if (!isLoading && (isError || !isAuthenticated)) {
+      navigate('/login', { replace: true });
+    }
+  }, [isLoading, isError, isAuthenticated, navigate]);
 
   return { isAuthenticated, isLoading };
 };
