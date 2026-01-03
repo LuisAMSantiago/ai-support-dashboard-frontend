@@ -38,7 +38,7 @@ const statusConfig: Record<AiJobStatus, { icon: typeof Sparkles; label: string; 
 };
 
 export const AiStatusIndicator = ({ status, label, className, size = 'md' }: AiStatusIndicatorProps) => {
-  const config = statusConfig[status];
+  const config = statusConfig[status] || statusConfig.idle;
   const Icon = config.icon;
   const iconSize = size === 'sm' ? 'w-3 h-3' : 'w-4 h-4';
 
