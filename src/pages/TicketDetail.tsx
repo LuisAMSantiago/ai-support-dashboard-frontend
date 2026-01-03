@@ -307,7 +307,7 @@ const TicketDetail = () => {
                 <CardDescription>Classificação automática</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                {ticket.priority && ticket.ai_priority_status === 'done' ? (
+                {ticket.priority ? (
                   <div className="p-3 rounded-md bg-muted/50">
                     <TicketPriorityBadge priority={ticket.priority} />
                   </div>
