@@ -12,18 +12,26 @@ export interface Ticket {
   status: TicketStatus;
   assigned_to: number | null;
   closed_at: string | null;
+  // Tracking fields
+  created_by: number | null;
+  updated_by: number | null;
+  closed_by: number | null;
+  reopened_by: number | null;
+  // AI status fields
   ai_summary_status: AiJobStatus;
   ai_reply_status: AiJobStatus;
   ai_priority_status: AiJobStatus;
   ai_last_error: string | null;
   created_at: string;
   updated_at: string;
+  deleted_at?: string | null;
 }
 
 export interface User {
   id: number;
   name: string;
   email: string;
+  is_admin: boolean;
   created_at: string;
   updated_at: string;
 }

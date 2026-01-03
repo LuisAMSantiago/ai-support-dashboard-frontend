@@ -10,6 +10,7 @@ import {
   useEnqueuePriority,
   isAnyAiJobProcessing,
 } from '@/hooks/useTickets';
+import { usePermissions } from '@/hooks/usePermissions';
 import { Layout } from '@/components/Layout';
 import { TicketStatusBadge } from '@/components/TicketStatusBadge';
 import { TicketPriorityBadge } from '@/components/TicketPriorityBadge';
@@ -31,6 +32,10 @@ import {
   Clock,
   Copy,
   Check,
+  User,
+  UserCheck,
+  XCircle,
+  RotateCcw,
 } from 'lucide-react';
 import type { UpdateTicketData } from '@/types';
 import { format } from 'date-fns';
@@ -49,10 +54,14 @@ const TicketDetail = () => {
   const enqueueSummaryMutation = useEnqueueSummary();
   const enqueueReplyMutation = useEnqueueReply();
   const enqueuePriorityMutation = useEnqueuePriority();
+  const { canEditTicket, canDeleteTicket } = usePermissions();
 
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  const hasPermissionToEdit = ticket ? canEditTicket(ticket) : false;
+  const hasPermissionToDelete = ticket ? canDeleteTicket(ticket) : false;
 
   // Polling for AI job status
   const shouldPoll = useMemo(() => {
@@ -123,16 +132,22 @@ const TicketDetail = () => {
             <ArrowLeft className="w-4 h-4" />
             Voltar
           </Button>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setEditModalOpen(true)}>
-              <Edit className="w-4 h-4" />
-              Editar
-            </Button>
-            <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
-              <Trash2 className="w-4 h-4" />
-              Excluir
-            </Button>
-          </div>
+          {(hasPermissionToEdit || hasPermissionToDelete) && (
+            <div className="flex gap-2">
+              {hasPermissionToEdit && (
+                <Button variant="outline" onClick={() => setEditModalOpen(true)}>
+                  <Edit className="w-4 h-4" />
+                  Editar
+                </Button>
+              )}
+              {hasPermissionToDelete && (
+                <Button variant="destructive" onClick={() => setDeleteDialogOpen(true)}>
+                  <Trash2 className="w-4 h-4" />
+                  Excluir
+                </Button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Ticket header */}
@@ -157,6 +172,46 @@ const TicketDetail = () => {
             </div>
           </div>
         </div>
+
+        {/* Tracking Info */}
+        {(ticket.created_by || ticket.updated_by || ticket.closed_by || ticket.reopened_by) && (
+          <Card className="bg-card border-border">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base flex items-center gap-2">
+                <User className="w-4 h-4 text-muted-foreground" />
+                Rastreamento
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-2 sm:grid-cols-2 text-sm">
+                {ticket.created_by && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <User className="w-3.5 h-3.5" />
+                    <span>Criado por: <span className="text-foreground">Usuário #{ticket.created_by}</span></span>
+                  </div>
+                )}
+                {ticket.updated_by && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>Atualizado por: <span className="text-foreground">Usuário #{ticket.updated_by}</span></span>
+                  </div>
+                )}
+                {ticket.closed_by && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Fechado por: <span className="text-foreground">Usuário #{ticket.closed_by}</span></span>
+                  </div>
+                )}
+                {ticket.reopened_by && (
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reaberto por: <span className="text-foreground">Usuário #{ticket.reopened_by}</span></span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Description */}
         <Card className="bg-card border-border">

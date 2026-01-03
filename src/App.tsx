@@ -7,6 +7,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Login from "@/pages/Login";
 import TicketList from "@/pages/TicketList";
 import TicketDetail from "@/pages/TicketDetail";
+import TrashedTickets from "@/pages/TrashedTickets";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -32,6 +33,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <TicketList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/trashed"
+            element={
+              <ProtectedRoute>
+                <TrashedTickets />
               </ProtectedRoute>
             }
           />

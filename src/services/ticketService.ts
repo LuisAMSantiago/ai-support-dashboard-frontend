@@ -43,6 +43,28 @@ export const ticketService = {
     await apiClient.delete(`/api/tickets/${id}`);
   },
 
+  // Trashed tickets endpoints
+  async getTrashedTickets(filters: TicketFilters = {}): Promise<PaginatedResponse<Ticket>> {
+    const params = new URLSearchParams();
+    
+    if (filters.page) params.append('page', String(filters.page));
+    if (filters.per_page) params.append('per_page', String(filters.per_page));
+    if (filters.q) params.append('q', filters.q);
+    if (filters.sort) params.append('sort', filters.sort);
+    
+    const response = await apiClient.get<PaginatedResponse<Ticket>>(`/api/tickets/trashed?${params.toString()}`);
+    return response.data;
+  },
+
+  async restoreTicket(id: number): Promise<Ticket> {
+    const response = await apiClient.post<SingleResponse<Ticket>>(`/api/tickets/${id}/restore`);
+    return response.data.data;
+  },
+
+  async forceDeleteTicket(id: number): Promise<void> {
+    await apiClient.delete(`/api/tickets/${id}/force`);
+  },
+
   // AI endpoints
   async enqueueSummary(id: number): Promise<AiJobResponse> {
     const response = await apiClient.post<AiJobResponse>(`/api/tickets/${id}/ai-summary`);
