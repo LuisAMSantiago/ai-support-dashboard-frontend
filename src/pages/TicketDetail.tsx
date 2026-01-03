@@ -184,28 +184,28 @@ const TicketDetail = () => {
             </CardHeader>
             <CardContent>
               <div className="grid gap-2 sm:grid-cols-2 text-sm">
-                {ticket.creator && (
+                {ticket.created_by && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <User className="w-3.5 h-3.5" />
-                    <span>Criado por: <span className="text-foreground">{ticket.creator.email}</span></span>
+                    <span>Criado por: <span className="text-foreground">{ticket.creator?.email ?? `Usuário #${ticket.created_by}`}</span></span>
                   </div>
                 )}
-                {ticket.updater && (
+                {ticket.updated_by && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <UserCheck className="w-3.5 h-3.5" />
-                    <span>Atualizado por: <span className="text-foreground">{ticket.updater.email}</span></span>
+                    <span>Atualizado por: <span className="text-foreground">{ticket.updater?.email ?? `Usuário #${ticket.updated_by}`}</span></span>
                   </div>
                 )}
-                {ticket.closer && (
+                {ticket.closed_by && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <XCircle className="w-3.5 h-3.5" />
-                    <span>Fechado por: <span className="text-foreground">{ticket.closer.email}</span></span>
+                    <span>Fechado por: <span className="text-foreground">{ticket.closer?.email ?? `Usuário #${ticket.closed_by}`}</span></span>
                   </div>
                 )}
-                {ticket.reopener && (
+                {ticket.reopened_by && (
                   <div className="flex items-center gap-2 text-muted-foreground">
                     <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Reaberto por: <span className="text-foreground">{ticket.reopener.email}</span></span>
+                    <span>Reaberto por: <span className="text-foreground">{ticket.reopener?.email ?? `Usuário #${ticket.reopened_by}`}</span></span>
                   </div>
                 )}
               </div>
