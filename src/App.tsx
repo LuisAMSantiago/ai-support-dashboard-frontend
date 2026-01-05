@@ -8,6 +8,9 @@ import Login from "@/pages/Login";
 import TicketList from "@/pages/TicketList";
 import TicketDetail from "@/pages/TicketDetail";
 import TrashedTickets from "@/pages/TrashedTickets";
+import TicketSummary from "@/pages/TicketSummary";
+import TicketBacklog from "@/pages/TicketBacklog";
+import TicketActivity from "@/pages/TicketActivity";
 import NotFound from "@/pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -41,6 +44,30 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <TrashedTickets />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/summary"
+            element={
+              <ProtectedRoute>
+                <TicketSummary />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/backlog"
+            element={
+              <ProtectedRoute>
+                <TicketBacklog />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/tickets/activity"
+            element={
+              <ProtectedRoute>
+                <TicketActivity />
               </ProtectedRoute>
             }
           />
