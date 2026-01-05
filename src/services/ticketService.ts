@@ -7,6 +7,9 @@ import type {
   PaginatedResponse,
   SingleResponse,
   AiJobResponse,
+  TicketSummary,
+  TicketBacklog,
+  ActivityEvent,
 } from '@/types';
 
 export const ticketService = {
@@ -79,6 +82,27 @@ export const ticketService = {
   async enqueuePriority(id: number): Promise<AiJobResponse> {
     const response = await apiClient.post<AiJobResponse>(`/api/tickets/${id}/ai-priority`);
     return response.data;
+  },
+
+  // Analytics endpoints
+  async getTicketSummary(): Promise<TicketSummary> {
+    const response = await apiClient.get<SingleResponse<TicketSummary>>('/api/tickets/summary');
+    return response.data.data;
+  },
+
+  async getTicketBacklog(): Promise<TicketBacklog> {
+    const response = await apiClient.get<SingleResponse<TicketBacklog>>('/api/tickets/backlog');
+    return response.data.data;
+  },
+
+  async getTicketActivity(perPage: number = 50): Promise<ActivityEvent[]> {
+    const params = new URLSearchParams();
+    if (perPage) params.append('per_page', String(perPage));
+    
+    const response = await apiClient.get<SingleResponse<ActivityEvent[]>>(
+      `/api/tickets/activity?${params.toString()}`
+    );
+    return response.data.data;
   },
 };
 

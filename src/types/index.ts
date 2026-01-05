@@ -91,6 +91,43 @@ export interface TicketFilters {
   sort?: string;
 }
 
+// Analytics types
+export interface TicketSummary {
+  total_active: number;
+  by_status: Record<TicketStatus, number>;
+  by_priority: Record<TicketPriority, number>;
+  closed: {
+    today: number;
+    last_7_days: number;
+    last_30_days: number;
+  };
+  average_time_to_close_hours: number | null;
+}
+
+export interface TicketBacklog {
+  counts: {
+    older_than_2_days: number;
+    older_than_7_days: number;
+    older_than_14_days: number;
+  };
+  oldest_open: Ticket[];
+}
+
+export type ActivityType = 'created' | 'updated' | 'status_changed' | 'ai_done';
+export type ActivitySubtype = 'closed' | 'reopened';
+export type AiType = 'summary' | 'reply' | 'priority';
+
+export interface ActivityEvent {
+  type: ActivityType;
+  subtype?: ActivitySubtype;
+  ai_type?: AiType;
+  ticket_id: number;
+  ticket_title: string;
+  user_id?: number | null;
+  status?: TicketStatus;
+  timestamp: string;
+}
+
 export interface CreateTicketData {
   title: string;
   description: string;
