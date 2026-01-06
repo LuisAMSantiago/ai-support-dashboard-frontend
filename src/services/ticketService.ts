@@ -10,6 +10,7 @@ import type {
   TicketSummary,
   TicketBacklog,
   ActivityEvent,
+  TicketEvent,
 } from '@/types';
 
 export const ticketService = {
@@ -103,6 +104,21 @@ export const ticketService = {
       `/api/tickets/activity?${params.toString()}`
     );
     return response.data.data;
+  },
+
+  // Ticket Events (per ticket timeline)
+  async getTicketEvents(
+    ticketId: number,
+    params: { per_page?: number; page?: number } = {}
+  ): Promise<PaginatedResponse<TicketEvent>> {
+    const searchParams = new URLSearchParams();
+    if (params.per_page) searchParams.append('per_page', String(params.per_page));
+    if (params.page) searchParams.append('page', String(params.page));
+    
+    const response = await apiClient.get<PaginatedResponse<TicketEvent>>(
+      `/api/tickets/${ticketId}/activity?${searchParams.toString()}`
+    );
+    return response.data;
   },
 };
 
