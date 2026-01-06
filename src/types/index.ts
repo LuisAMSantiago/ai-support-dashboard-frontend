@@ -128,6 +128,39 @@ export interface ActivityEvent {
   timestamp: string;
 }
 
+// Ticket Event types (from ticket_events table)
+export type TicketEventType =
+  | 'created'
+  | 'updated'
+  | 'status_changed'
+  | 'deleted'
+  | 'restored'
+  | 'ai_summary_done'
+  | 'ai_reply_done'
+  | 'ai_priority_done';
+
+export interface TicketEventMeta {
+  before?: TicketStatus;
+  after?: TicketStatus;
+  [key: string]: any;
+}
+
+export interface TicketEventUser {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface TicketEvent {
+  id: number;
+  ticket_id: number;
+  type: TicketEventType;
+  meta: TicketEventMeta | null;
+  created_by: number | null;
+  created_at: string;
+  user?: TicketEventUser | null;
+}
+
 export interface CreateTicketData {
   title: string;
   description: string;

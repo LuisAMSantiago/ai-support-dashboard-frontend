@@ -18,8 +18,10 @@ import { AiStatusIndicator } from '@/components/AiStatusIndicator';
 import { TicketDetailSkeleton } from '@/components/LoadingSkeleton';
 import { TicketFormModal } from '@/components/TicketFormModal';
 import { ConfirmDialog } from '@/components/ConfirmDialog';
+import { TicketActivityTimeline } from '@/components/TicketActivityTimeline';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   ArrowLeft,
   Edit,
@@ -36,6 +38,8 @@ import {
   UserCheck,
   XCircle,
   RotateCcw,
+  Activity,
+  FileText,
 } from 'lucide-react';
 import type { UpdateTicketData } from '@/types';
 import { format } from 'date-fns';
@@ -173,229 +177,262 @@ const TicketDetail = () => {
           </div>
         </div>
 
-        {/* Tracking Info */}
-        {(ticket.created_by_user || ticket.updated_by_user || ticket.closed_by_user || ticket.reopened_by_user) && (
-          <Card className="bg-card border-border">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base flex items-center gap-2">
-                <User className="w-4 h-4 text-muted-foreground" />
-                Rastreamento
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid gap-2 sm:grid-cols-2 text-sm">
-                {ticket.created_by_user && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <User className="w-3.5 h-3.5" />
-                    <span>Criado por: <span className="text-foreground">{ticket.created_by_user.email}</span></span>
+        {/* Tabs: Details and Activity */}
+        <Tabs defaultValue="details" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 max-w-md">
+            <TabsTrigger value="details" className="flex items-center gap-2">
+              <FileText className="w-4 h-4" />
+              Detalhes
+            </TabsTrigger>
+            <TabsTrigger value="activity" className="flex items-center gap-2">
+              <Activity className="w-4 h-4" />
+              Atividade
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="details" className="space-y-6">
+            {/* Tracking Info */}
+            {(ticket.created_by_user || ticket.updated_by_user || ticket.closed_by_user || ticket.reopened_by_user) && (
+              <Card className="bg-card border-border">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2">
+                    <User className="w-4 h-4 text-muted-foreground" />
+                    Rastreamento
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-2 sm:grid-cols-2 text-sm">
+                    {ticket.created_by_user && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <User className="w-3.5 h-3.5" />
+                        <span>Criado por: <span className="text-foreground">{ticket.created_by_user.email}</span></span>
+                      </div>
+                    )}
+                    {ticket.updated_by_user && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <UserCheck className="w-3.5 h-3.5" />
+                        <span>Atualizado por: <span className="text-foreground">{ticket.updated_by_user.email}</span></span>
+                      </div>
+                    )}
+                    {ticket.closed_by_user && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <XCircle className="w-3.5 h-3.5" />
+                        <span>Fechado por: <span className="text-foreground">{ticket.closed_by_user.email}</span></span>
+                      </div>
+                    )}
+                    {ticket.reopened_by_user && (
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <RotateCcw className="w-3.5 h-3.5" />
+                        <span>Reaberto por: <span className="text-foreground">{ticket.reopened_by_user.email}</span></span>
+                      </div>
+                    )}
                   </div>
-                )}
-                {ticket.updated_by_user && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <UserCheck className="w-3.5 h-3.5" />
-                    <span>Atualizado por: <span className="text-foreground">{ticket.updated_by_user.email}</span></span>
-                  </div>
-                )}
-                {ticket.closed_by_user && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <XCircle className="w-3.5 h-3.5" />
-                    <span>Fechado por: <span className="text-foreground">{ticket.closed_by_user.email}</span></span>
-                  </div>
-                )}
-                {ticket.reopened_by_user && (
-                  <div className="flex items-center gap-2 text-muted-foreground">
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Reaberto por: <span className="text-foreground">{ticket.reopened_by_user.email}</span></span>
-                  </div>
-                )}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Description */}
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="text-lg">Descrição</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-foreground whitespace-pre-wrap">{ticket.description}</p>
+              </CardContent>
+            </Card>
+
+            {/* AI Features */}
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-accent" />
+                Recursos de IA
+              </h2>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                {/* AI Summary */}
+                <Card className={cn('bg-card border-border', ticket.ai_summary_status === 'done' && 'ai-glow')}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-accent" />
+                        Resumo IA
+                      </CardTitle>
+                      <AiStatusIndicator status={ticket.ai_summary_status} size="sm" />
+                    </div>
+                    <CardDescription>Resumo automático do ticket</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {ticket.ai_summary ? (
+                      <div className="p-3 rounded-md bg-muted/50 relative group">
+                        <p className="text-sm text-foreground pr-8">{ticket.ai_summary}</p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => copyToClipboard(ticket.ai_summary!, 'summary')}
+                        >
+                          {copiedField === 'summary' ? (
+                            <Check className="w-3 h-3 text-success" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </Button>
+                      </div>
+                    ) : ticket.ai_summary_status === 'failed' ? (
+                      <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
+                        <p className="text-sm text-destructive">{ticket.ai_last_error || 'Erro ao gerar resumo'}</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Nenhum resumo gerado ainda</p>
+                    )}
+                    <Button
+                      variant="ai"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => enqueueSummaryMutation.mutate(ticketId)}
+                      disabled={['queued', 'processing'].includes(ticket.ai_summary_status) || isAnyAiLoading}
+                    >
+                      {['queued', 'processing'].includes(ticket.ai_summary_status) ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          Processando...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4" />
+                          {ticket.ai_summary ? 'Gerar novamente' : 'Gerar resumo'}
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* AI Reply */}
+                <Card className={cn('bg-card border-border', ticket.ai_reply_status === 'done' && 'ai-glow')}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <MessageSquare className="w-4 h-4 text-accent" />
+                        Resposta IA
+                      </CardTitle>
+                      <AiStatusIndicator status={ticket.ai_reply_status} size="sm" />
+                    </div>
+                    <CardDescription>Sugestão de resposta</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {ticket.ai_suggested_reply ? (
+                      <div className="p-3 rounded-md bg-muted/50 relative group max-h-40 overflow-y-auto scrollbar-thin">
+                        <p className="text-sm text-foreground whitespace-pre-wrap pr-8">
+                          {ticket.ai_suggested_reply}
+                        </p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={() => copyToClipboard(ticket.ai_suggested_reply!, 'reply')}
+                        >
+                          {copiedField === 'reply' ? (
+                            <Check className="w-3 h-3 text-success" />
+                          ) : (
+                            <Copy className="w-3 h-3" />
+                          )}
+                        </Button>
+                      </div>
+                    ) : ticket.ai_reply_status === 'failed' ? (
+                      <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
+                        <p className="text-sm text-destructive">{ticket.ai_last_error || 'Erro ao gerar resposta'}</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Nenhuma resposta sugerida</p>
+                    )}
+                    <Button
+                      variant="ai"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => enqueueReplyMutation.mutate(ticketId)}
+                      disabled={['queued', 'processing'].includes(ticket.ai_reply_status) || isAnyAiLoading}
+                    >
+                      {['queued', 'processing'].includes(ticket.ai_reply_status) ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          Processando...
+                        </>
+                      ) : (
+                        <>
+                          <MessageSquare className="w-4 h-4" />
+                          {ticket.ai_suggested_reply ? 'Gerar novamente' : 'Gerar resposta'}
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
+
+                {/* AI Priority */}
+                <Card className={cn('bg-card border-border', ticket.ai_priority_status === 'done' && 'ai-glow')}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <CardTitle className="text-base flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-accent" />
+                        Prioridade IA
+                      </CardTitle>
+                      <AiStatusIndicator status={ticket.ai_priority_status} size="sm" />
+                    </div>
+                    <CardDescription>Classificação automática</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {ticket.priority ? (
+                      <div className="p-3 rounded-md bg-muted/50">
+                        <TicketPriorityBadge priority={ticket.priority} />
+                      </div>
+                    ) : ticket.ai_priority_status === 'failed' ? (
+                      <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
+                        <p className="text-sm text-destructive">{ticket.ai_last_error || 'Erro ao classificar'}</p>
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Prioridade não classificada pela IA</p>
+                    )}
+                    <Button
+                      variant="ai"
+                      size="sm"
+                      className="w-full"
+                      onClick={() => enqueuePriorityMutation.mutate(ticketId)}
+                      disabled={['queued', 'processing'].includes(ticket.ai_priority_status) || isAnyAiLoading}
+                    >
+                      {['queued', 'processing'].includes(ticket.ai_priority_status) ? (
+                        <>
+                          <RefreshCw className="w-4 h-4 animate-spin" />
+                          Processando...
+                        </>
+                      ) : (
+                        <>
+                          <AlertTriangle className="w-4 h-4" />
+                          Classificar prioridade
+                        </>
+                      )}
+                    </Button>
+                  </CardContent>
+                </Card>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          </TabsContent>
 
-        {/* Description */}
-        <Card className="bg-card border-border">
-          <CardHeader>
-            <CardTitle className="text-lg">Descrição</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-foreground whitespace-pre-wrap">{ticket.description}</p>
-          </CardContent>
-        </Card>
-
-        {/* AI Features */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-accent" />
-            Recursos de IA
-          </h2>
-
-          <div className="grid gap-4 md:grid-cols-3">
-            {/* AI Summary */}
-            <Card className={cn('bg-card border-border', ticket.ai_summary_status === 'done' && 'ai-glow')}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <Sparkles className="w-4 h-4 text-accent" />
-                    Resumo IA
-                  </CardTitle>
-                  <AiStatusIndicator status={ticket.ai_summary_status} size="sm" />
-                </div>
-                <CardDescription>Resumo automático do ticket</CardDescription>
+          <TabsContent value="activity">
+            <Card className="bg-card border-border">
+              <CardHeader>
+                <CardTitle className="text-lg flex items-center gap-2">
+                  <Activity className="w-5 h-5" />
+                  Histórico de Atividades
+                </CardTitle>
+                <CardDescription>
+                  Timeline de eventos deste ticket
+                </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-3">
-                {ticket.ai_summary ? (
-                  <div className="p-3 rounded-md bg-muted/50 relative group">
-                    <p className="text-sm text-foreground pr-8">{ticket.ai_summary}</p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => copyToClipboard(ticket.ai_summary!, 'summary')}
-                    >
-                      {copiedField === 'summary' ? (
-                        <Check className="w-3 h-3 text-success" />
-                      ) : (
-                        <Copy className="w-3 h-3" />
-                      )}
-                    </Button>
-                  </div>
-                ) : ticket.ai_summary_status === 'failed' ? (
-                  <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
-                    <p className="text-sm text-destructive">{ticket.ai_last_error || 'Erro ao gerar resumo'}</p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">Nenhum resumo gerado ainda</p>
-                )}
-                <Button
-                  variant="ai"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => enqueueSummaryMutation.mutate(ticketId)}
-                  disabled={['queued', 'processing'].includes(ticket.ai_summary_status) || isAnyAiLoading}
-                >
-                  {['queued', 'processing'].includes(ticket.ai_summary_status) ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="w-4 h-4" />
-                      {ticket.ai_summary ? 'Gerar novamente' : 'Gerar resumo'}
-                    </>
-                  )}
-                </Button>
+              <CardContent>
+                <TicketActivityTimeline ticketId={ticketId} />
               </CardContent>
             </Card>
-
-            {/* AI Reply */}
-            <Card className={cn('bg-card border-border', ticket.ai_reply_status === 'done' && 'ai-glow')}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <MessageSquare className="w-4 h-4 text-accent" />
-                    Resposta IA
-                  </CardTitle>
-                  <AiStatusIndicator status={ticket.ai_reply_status} size="sm" />
-                </div>
-                <CardDescription>Sugestão de resposta</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {ticket.ai_suggested_reply ? (
-                  <div className="p-3 rounded-md bg-muted/50 relative group max-h-40 overflow-y-auto scrollbar-thin">
-                    <p className="text-sm text-foreground whitespace-pre-wrap pr-8">
-                      {ticket.ai_suggested_reply}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => copyToClipboard(ticket.ai_suggested_reply!, 'reply')}
-                    >
-                      {copiedField === 'reply' ? (
-                        <Check className="w-3 h-3 text-success" />
-                      ) : (
-                        <Copy className="w-3 h-3" />
-                      )}
-                    </Button>
-                  </div>
-                ) : ticket.ai_reply_status === 'failed' ? (
-                  <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
-                    <p className="text-sm text-destructive">{ticket.ai_last_error || 'Erro ao gerar resposta'}</p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">Nenhuma resposta sugerida</p>
-                )}
-                <Button
-                  variant="ai"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => enqueueReplyMutation.mutate(ticketId)}
-                  disabled={['queued', 'processing'].includes(ticket.ai_reply_status) || isAnyAiLoading}
-                >
-                  {['queued', 'processing'].includes(ticket.ai_reply_status) ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      <MessageSquare className="w-4 h-4" />
-                      {ticket.ai_suggested_reply ? 'Gerar novamente' : 'Gerar resposta'}
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* AI Priority */}
-            <Card className={cn('bg-card border-border', ticket.ai_priority_status === 'done' && 'ai-glow')}>
-              <CardHeader className="pb-3">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <AlertTriangle className="w-4 h-4 text-accent" />
-                    Prioridade IA
-                  </CardTitle>
-                  <AiStatusIndicator status={ticket.ai_priority_status} size="sm" />
-                </div>
-                <CardDescription>Classificação automática</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {ticket.priority ? (
-                  <div className="p-3 rounded-md bg-muted/50">
-                    <TicketPriorityBadge priority={ticket.priority} />
-                  </div>
-                ) : ticket.ai_priority_status === 'failed' ? (
-                  <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
-                    <p className="text-sm text-destructive">{ticket.ai_last_error || 'Erro ao classificar'}</p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-muted-foreground">Prioridade não classificada pela IA</p>
-                )}
-                <Button
-                  variant="ai"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => enqueuePriorityMutation.mutate(ticketId)}
-                  disabled={['queued', 'processing'].includes(ticket.ai_priority_status) || isAnyAiLoading}
-                >
-                  {['queued', 'processing'].includes(ticket.ai_priority_status) ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      <AlertTriangle className="w-4 h-4" />
-                      Classificar prioridade
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </div>
 
       {/* Modals */}

@@ -27,6 +27,7 @@ import {
   Trash2,
   Calendar,
   RefreshCw,
+  Activity,
 } from 'lucide-react';
 import type { TicketFilters, TicketStatus, TicketPriority, CreateTicketData, Ticket } from '@/types';
 import { formatDistanceToNow } from 'date-fns';
@@ -251,14 +252,16 @@ const TicketList = () => {
         ) : (
           <div className="space-y-3">
             {tickets.map((ticket, index) => (
-              <Link
+              <div
                 key={ticket.id}
-                to={`/tickets/${ticket.id}`}
                 className="block p-4 rounded-lg bg-card border border-border hover:border-primary/50 transition-all duration-200 group animate-fade-in"
                 style={{ animationDelay: `${index * 30}ms` }}
               >
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-                  <div className="flex-1 min-w-0">
+                  <Link
+                    to={`/tickets/${ticket.id}`}
+                    className="flex-1 min-w-0"
+                  >
                     <h3 className="font-medium text-foreground group-hover:text-primary transition-colors truncate">
                       {ticket.title}
                     </h3>
@@ -274,7 +277,7 @@ const TicketList = () => {
                         })}
                       </span>
                     </div>
-                  </div>
+                  </Link>
 
                   <div className="flex flex-wrap items-center gap-2">
                     <TicketStatusBadge status={ticket.status} />
@@ -284,6 +287,14 @@ const TicketList = () => {
                       replyStatus={ticket.ai_reply_status}
                       priorityStatus={ticket.ai_priority_status}
                     />
+                    <Link
+                      to={`/tickets/${ticket.id}?tab=activity`}
+                      className="h-8 w-8 flex items-center justify-center rounded-md hover:bg-muted transition-colors opacity-0 group-hover:opacity-100"
+                      title="Ver atividade"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Activity className="w-4 h-4 text-muted-foreground" />
+                    </Link>
                     <Button
                       variant="ghost"
                       size="icon"
@@ -297,7 +308,7 @@ const TicketList = () => {
                     </Button>
                   </div>
                 </div>
-              </Link>
+              </div>
             ))}
           </div>
         )}
