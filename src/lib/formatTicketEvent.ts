@@ -9,6 +9,8 @@ import {
   Sparkles,
   MessageSquare,
   AlertTriangle,
+  ArrowUpRight,
+  ArrowDownRight,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -28,6 +30,28 @@ const statusLabels: Record<string, string> = {
   closed: 'Fechado',
 };
 
+const statusOrder: Record<string, number> = {
+  open: 0,
+  in_progress: 1,
+  waiting: 2,
+  resolved: 3,
+  closed: 4,
+};
+
+const iconColorClass = new Map<LucideIcon, string>([
+  [Plus, 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'],
+  [Edit, 'bg-blue-500/10 text-blue-500 border-blue-500/30'],
+  [CheckCircle2, 'bg-slate-500/10 text-slate-500 border-slate-500/30'],
+  [RotateCcw, 'bg-amber-500/10 text-amber-500 border-amber-500/30'],
+  [ArrowUpRight, 'bg-teal-500/10 text-teal-500 border-teal-500/30'],
+  [ArrowDownRight, 'bg-cyan-500/10 text-cyan-500 border-cyan-500/30'],
+  [Trash2, 'bg-red-500/10 text-red-500 border-red-500/30'],
+  [Undo2, 'bg-orange-500/10 text-orange-500 border-orange-500/30'],
+  [Sparkles, 'bg-fuchsia-500/10 text-fuchsia-500 border-fuchsia-500/30'],
+  [MessageSquare, 'bg-indigo-500/10 text-indigo-500 border-indigo-500/30'],
+  [AlertTriangle, 'bg-rose-500/10 text-rose-500 border-rose-500/30'],
+]);
+
 export function formatTicketEvent(
   type: TicketEventType,
   meta: TicketEventMeta | null
@@ -38,7 +62,7 @@ export function formatTicketEvent(
         label: 'Ticket criado',
         icon: Plus,
         isAi: false,
-        colorClass: 'bg-green-500/10 text-green-500 border-green-500/30',
+        colorClass: iconColorClass.get(Plus)!,
       };
 
     case 'updated':
@@ -46,7 +70,7 @@ export function formatTicketEvent(
         label: 'Ticket atualizado',
         icon: Edit,
         isAi: false,
-        colorClass: 'bg-blue-500/10 text-blue-500 border-blue-500/30',
+        colorClass: iconColorClass.get(Edit)!,
       };
 
     case 'status_changed': {
@@ -54,16 +78,29 @@ export function formatTicketEvent(
       const after = meta?.after ? statusLabels[meta.after] || meta.after : '?';
       const isClosed = meta?.after === 'closed';
       const isReopened = meta?.before === 'closed' && meta?.after !== 'closed';
+      const beforeOrder =
+        meta?.before && statusOrder[meta.before] !== undefined ? statusOrder[meta.before] : null;
+      const afterOrder =
+        meta?.after && statusOrder[meta.after] !== undefined ? statusOrder[meta.after] : null;
+      const isForward =
+        !isClosed && !isReopened && beforeOrder !== null && afterOrder !== null && afterOrder > beforeOrder;
+      const isBackward =
+        !isClosed && !isReopened && beforeOrder !== null && afterOrder !== null && afterOrder < beforeOrder;
+      const statusIcon = isClosed
+        ? CheckCircle2
+        : isReopened
+        ? RotateCcw
+        : isForward
+        ? ArrowUpRight
+        : isBackward
+        ? ArrowDownRight
+        : Edit;
 
       return {
         label: 'Status alterado',
-        icon: isClosed ? CheckCircle2 : isReopened ? RotateCcw : Edit,
+        icon: statusIcon,
         isAi: false,
-        colorClass: isClosed
-          ? 'bg-gray-500/10 text-gray-500 border-gray-500/30'
-          : isReopened
-          ? 'bg-yellow-500/10 text-yellow-500 border-yellow-500/30'
-          : 'bg-blue-500/10 text-blue-500 border-blue-500/30',
+        colorClass: iconColorClass.get(statusIcon)!,
         details: `${before} → ${after}`,
       };
     }
@@ -73,7 +110,7 @@ export function formatTicketEvent(
         label: 'Ticket excluído',
         icon: Trash2,
         isAi: false,
-        colorClass: 'bg-red-500/10 text-red-500 border-red-500/30',
+        colorClass: iconColorClass.get(Trash2)!,
       };
 
     case 'restored':
@@ -81,7 +118,7 @@ export function formatTicketEvent(
         label: 'Ticket restaurado',
         icon: Undo2,
         isAi: false,
-        colorClass: 'bg-orange-500/10 text-orange-500 border-orange-500/30',
+        colorClass: iconColorClass.get(Undo2)!,
       };
 
     case 'ai_summary_done':
@@ -89,7 +126,7 @@ export function formatTicketEvent(
         label: 'AI: resumo gerado',
         icon: Sparkles,
         isAi: true,
-        colorClass: 'bg-purple-500/10 text-purple-500 border-purple-500/30',
+        colorClass: iconColorClass.get(Sparkles)!,
       };
 
     case 'ai_reply_done':
@@ -97,7 +134,7 @@ export function formatTicketEvent(
         label: 'AI: sugestão de resposta gerada',
         icon: MessageSquare,
         isAi: true,
-        colorClass: 'bg-purple-500/10 text-purple-500 border-purple-500/30',
+        colorClass: iconColorClass.get(MessageSquare)!,
       };
 
     case 'ai_priority_done':
@@ -105,7 +142,7 @@ export function formatTicketEvent(
         label: 'AI: prioridade classificada',
         icon: AlertTriangle,
         isAi: true,
-        colorClass: 'bg-purple-500/10 text-purple-500 border-purple-500/30',
+        colorClass: iconColorClass.get(AlertTriangle)!,
       };
 
     default:
@@ -113,7 +150,7 @@ export function formatTicketEvent(
         label: 'Evento',
         icon: Edit,
         isAi: false,
-        colorClass: 'bg-muted text-muted-foreground border-border',
+        colorClass: iconColorClass.get(Edit) || 'bg-muted text-muted-foreground border-border',
       };
   }
 }

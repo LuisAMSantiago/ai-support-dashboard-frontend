@@ -24,6 +24,8 @@ export function TicketActivityTimeline({ ticketId }: TicketActivityTimelineProps
     perPage: 20,
     page,
   });
+  const isRecord = (value: unknown): value is Record<string, unknown> =>
+    typeof value === 'object' && value !== null && !Array.isArray(value);
 
   if (isLoading) {
     return (
@@ -76,12 +78,50 @@ export function TicketActivityTimeline({ ticketId }: TicketActivityTimelineProps
     );
   }
 
+  const closedOrReopenedTimestamps = new Set(
+    events
+      .filter(
+        (event) =>
+          event.type === 'status_changed' &&
+          (event.meta?.after === 'closed' || event.meta?.before === 'closed')
+      )
+      .map((event) => event.created_at)
+  );
+
+  const filteredEvents = events.filter((event) => {
+    if (event.type !== 'updated') {
+      return true;
+    }
+
+    if (!closedOrReopenedTimestamps.has(event.created_at)) {
+      return true;
+    }
+
+    const changedFields = isRecord(event.meta?.changed_fields)
+      ? event.meta?.changed_fields
+      : null;
+
+    if (!changedFields) {
+      return true;
+    }
+
+    const statusChange = isRecord(changedFields.status)
+      ? changedFields.status.before === 'closed' || changedFields.status.after === 'closed'
+      : false;
+
+    const hasClosedAt = Object.prototype.hasOwnProperty.call(changedFields, 'closed_at');
+    const hasReopenedBy = Object.prototype.hasOwnProperty.call(changedFields, 'reopened_by');
+    const hasClosedBy = Object.prototype.hasOwnProperty.call(changedFields, 'closed_by');
+
+    return !(statusChange || hasClosedAt || hasReopenedBy || hasClosedBy);
+  });
+
   // Sort events based on user preference
   const sortedEvents = sortNewestFirst
-    ? [...events].sort(
+    ? [...filteredEvents].sort(
         (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       )
-    : [...events].sort(
+    : [...filteredEvents].sort(
         (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
       );
 

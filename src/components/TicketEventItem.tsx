@@ -67,7 +67,7 @@ export function TicketEventItem({ event, isLast }: TicketEventItemProps) {
 
         {/* Meta viewer for extra details */}
         {event.meta && Object.keys(event.meta).length > 0 && (
-          <EventMetaViewer meta={event.meta} />
+          <EventMetaViewer meta={event.meta} eventType={event.type} />
         )}
       </div>
     </div>
