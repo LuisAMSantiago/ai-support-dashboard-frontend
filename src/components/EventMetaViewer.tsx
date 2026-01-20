@@ -92,6 +92,10 @@ const formatValue = (field: string, value: unknown) => {
 export function EventMetaViewer({ meta, eventType }: EventMetaViewerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
+  if (eventType === 'ai_summary_done') {
+    return null;
+  }
+
   // Filter out before/after since they're handled specially for status_changed
   const displayMeta = { ...meta };
   delete displayMeta.before;

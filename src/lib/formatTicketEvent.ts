@@ -123,10 +123,11 @@ export function formatTicketEvent(
 
     case 'ai_summary_done':
       return {
-        label: 'AI: resumo gerado',
+        label: 'Resumo',
         icon: Sparkles,
         isAi: true,
         colorClass: iconColorClass.get(Sparkles)!,
+        details: typeof meta?.summary === 'string' ? meta.summary : undefined,
       };
 
     case 'ai_reply_done':
