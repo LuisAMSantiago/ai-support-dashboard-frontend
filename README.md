@@ -2,8 +2,10 @@
 
 Frontend SPA of the **AI Support Dashboard** project. It consumes the Laravel API and implements the support dashboard interface with tickets, activity tracking, and analytics.
 
-This repository is part of the **AI Support Dashboard** project.  
+This repository is part of the **AI Support Dashboard** project.
 Project overview and architecture: https://github.com/LuisAMSantiago/ai-support-dashboard
+
+---
 
 ## Tech Stack
 - Vite
@@ -38,3 +40,9 @@ Authentication is handled via a SPA integrated with the Laravel API using Sanctu
 Use the user created by the backend seed:
 - email: `test@example.com`
 - password: `password`
+
+---
+
+## Author
+
+Developed by **Luis Santiago**
